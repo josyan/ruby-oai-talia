@@ -1,6 +1,9 @@
+require 'yaml'
+
 spec = Gem::Specification.new do |s|
   s.name = 'oai_talia'
-  s.version = '0.0.17'
+  v = YAML.load_file('VERSION.yml')
+  s.version = [:major, :minor, :patch, :build].map { |mv| v[mv] if v[mv] }.compact.join '.'
   s.authors = ['Ed Summers', 'Daniel Hahn', 'Josyan Pierson']
   s.email = 'josyan@demarque.com'
   s.homepage = 'http://github.com/josyan/ruby-oai-talia'
