@@ -35,12 +35,14 @@ module OAI
         def response
           @builder = Builder::XmlMarkup.new
           @builder.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
-          @builder.tag!('OAI-PMH', header) do 
+          @builder.tag!('OAI-PMH', header) do
             @builder.responseDate Time.now.utc.xmlschema
-            #options parameter has been removed here because with it
-            #the data won't validate against oai validators.  Without, it 
-            #validates.  
-            @builder.request(provider.url) #-- OAI 2.0 Hack - removed request options 
+
+            options = @original_options.dup
+            verb = self.class.name.split('::').last
+            options.merge!(:verb => verb) if OAI::Const::VERBS.keys.include?(verb)
+
+            @builder.request(provider.url, options)
             yield @builder
           end
         end
@@ -48,7 +50,7 @@ module OAI
         private
 
         def header
-          { 
+          {
             'xmlns' => "http://www.openarchives.org/OAI/2.0/",
             'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
             'xsi:schemaLocation' => %{http://www.openarchives.org/OAI/2.0/
@@ -85,12 +87,12 @@ module OAI
 
           def valid_times?
 
-            if (@original_options[:from].nil? || 
+            if (@original_options[:from].nil? ||
               @original_options[:from] =~ /^\d\d\d\d-\d\d-\d\d(T\d\d:\d\d:\d\dZ)?/  ||
               @original_options[:from].instance_of?(Time))
 
 
-              if (@original_options[:until].nil? || 
+              if (@original_options[:until].nil? ||
                 @original_options[:until] =~ /^\d\d\d\d-\d\d-\d\d(T\d\d:\d\d:\d\dZ)?/ ||
                 @original_options[:until].instance_of?(Time))
               else
@@ -101,7 +103,7 @@ module OAI
             end
             # if dates are not nil and are strings, make sure they're the same length
             # testing granularity
-            if ((!@original_options[:from].nil? && @original_options[:from].respond_to?(:length)) && 
+            if ((!@original_options[:from].nil? && @original_options[:from].respond_to?(:length)) &&
               (!@original_options[:until].nil? && @original_options[:until].respond_to?(:length)))
               if @original_options[:from].length != @original_options[:until].length
                 return false
@@ -119,7 +121,7 @@ module OAI
           end
 
           def resumption?
-            if @options.keys.include?(:resumption_token) 
+            if @options.keys.include?(:resumption_token)
               return true if 1 == @options.keys.size
               raise OAI::ArgumentException.new
             end
@@ -136,7 +138,7 @@ module OAI
             Date.parse(value) # This will raise an exception for badly formatted dates
             Time.parse(value).utc #  -- UTC Bug fix hack 8/08 not in core
           rescue
-            raise OAI::ArgumentException.new 
+            raise OAI::ArgumentException.new
           end
 
           def internalize(hash = {})
