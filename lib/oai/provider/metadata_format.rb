@@ -3,7 +3,7 @@ require 'singleton'
 module OAI::Provider::Metadata
   # == Metadata Base Class
   #
-  # MetadataFormat is the base class from which all other format classes 
+  # MetadataFormat is the base class from which all other format classes
   # should inherit.  Format classes provide mapping of record fields into XML.
   #
   # * prefix - contains the metadata_prefix used to select the format
@@ -16,9 +16,9 @@ module OAI::Provider::Metadata
   #
   class Format
     include Singleton
-    
+
     attr_accessor :prefix, :schema, :namespace, :element_namespace, :fields
-    
+
     # Provided a model, and a record belonging to that model this method
     # will return an xml represention of the record.  This is the method
     # that should be extended if you need to create more complex xml
@@ -35,10 +35,10 @@ module OAI::Provider::Metadata
               values = value_for(field, record, map)
               if values.respond_to?(:each)
                 values.each do |value|
-                  xml.tag! "#{element_namespace}:#{field}", value
+                  add_tag xml, element_namespace, field, value
                 end
-              else
-                xml.tag! "#{element_namespace}:#{field}", values
+              elsif !values.nil?
+                add_tag xml, element_namespace, field, values
               end
             end
           elsif fields.is_a?(Hash)
@@ -47,10 +47,10 @@ module OAI::Provider::Metadata
                 values = value_for(field, record, map)
                 if values.respond_to?(:each)
                   values.each do |value|
-                    xml.tag! "#{key}:#{field}", value
+                    add_tag xml, key, field, value
                   end
-                else
-                  xml.tag! "#{key}:#{field}", values
+                elsif !values.nil?
+                  add_tag xml, key, field, values
                 end
               end
             end
@@ -62,15 +62,27 @@ module OAI::Provider::Metadata
 
     private
 
+    # if a value to be added in the xml is a Hash,
+    # get the value for the key :value as the value
+    # for the tag, all other values will be xml attributes
+    def add_tag(xml, namespace, field, value)
+      if value.is_a?(Hash)
+        v = value.delete(:value)
+        xml.tag! "#{namespace}:#{field}", v, value
+      else
+        xml.tag! "#{namespace}:#{field}", value
+      end
+    end
+
     # We try a bunch of different methods to get the data from the model.
     #
-    # 1.  Check if the model defines a field mapping for the field of 
+    # 1.  Check if the model defines a field mapping for the field of
     #     interest.
     # 2.  Try calling the pluralized name method on the model.
     # 3.  Try calling the singular name method on the model
     def value_for(field, record, map)
-      method = map[field] ? map[field].to_s : field.to_s 
-     
+      method = map[field] ? map[field].to_s : field.to_s
+
       if record.respond_to?(pluralize(method))
         record.send pluralize(method)
       elsif record.respond_to?(method)
@@ -86,26 +98,26 @@ module OAI::Provider::Metadata
     def header_specification
       raise NotImplementedError.new
     end
-    
+
     # Shamelessly lifted form ActiveSupport.  Thanks Rails community!
     def pluralize(word)
       # Use ActiveSupports pluralization if it's available.
       return word.pluralize if word.respond_to?(:pluralize)
-      
+
       # Otherwise use our own simple pluralization rules.
       result = word.to_s.dup
-      
+
       # Uncountable words
       return result if %w(equipment information rice money species series fish sheep).include?(result)
-      
+
       # Irregular words
-      { 'person' => 'people', 'man' => 'men', 'child' => 'children', 'sex' => 'sexes', 
+      { 'person' => 'people', 'man' => 'men', 'child' => 'children', 'sex' => 'sexes',
         'move' => 'moves', 'cow' => 'kine' }.each { |k,v| return v if word == k }
-      
+
       rules.each { |(rule, replacement)| break if result.gsub!(rule, replacement) }
       result
     end
-    
+
     def rules
       [
         [/$/, 's'],
@@ -127,17 +139,17 @@ module OAI::Provider::Metadata
         [/(quiz)$/i, '\1zes']
       ]
     end
-    
+
     def silence_warnings
       old_verbose, $VERBOSE = $VERBOSE, nil
       yield
     ensure
       $VERBOSE = old_verbose
     end
-    
+
 
   end
-  
+
 end
 
 Dir.glob(File.dirname(__FILE__) + '/metadata_format/*.rb').each {|lib| require lib}
