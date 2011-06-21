@@ -32,26 +32,12 @@ module OAI::Provider::Metadata
         xml.tag!("#{prefix}:#{element_namespace}", header_specification) do
           if fields.is_a?(Array)
             fields.each do |field|
-              values = value_for(field, record, map)
-              if values.respond_to?(:each)
-                values.each do |value|
-                  add_tag xml, element_namespace, field, value
-                end
-              elsif !values.nil?
-                add_tag xml, element_namespace, field, values
-              end
+              add_values xml, element_namespace, field, record, map
             end
           elsif fields.is_a?(Hash)
             fields.each_pair do |key, field_array|
               field_array.to_a.each do |field|
-                values = value_for(field, record, map)
-                if values.respond_to?(:each)
-                  values.each do |value|
-                    add_tag xml, key, field, value
-                  end
-                elsif !values.nil?
-                  add_tag xml, key, field, values
-                end
+                add_values xml, key, field, record, map
               end
             end
           end
@@ -61,6 +47,20 @@ module OAI::Provider::Metadata
     end
 
     private
+
+    # don't want to repeat this code twice
+    def add_values(xml, namespace, field, record, map)
+      values = value_for(field, record, map)
+      if values.is_a?(Array)
+        values.each do |value|
+          add_tag xml, namespace, field, value
+        end
+      elsif values.is_a?(String) and values =~ /^<(.+)>.*<\/\1>$/ # data is xml
+        xml << values
+      elsif !values.nil? and !values.to_s.empty?
+        add_tag xml, namespace, field, values
+      end
+    end
 
     # if a value to be added in the xml is a Hash,
     # get the value for the key :value as the value

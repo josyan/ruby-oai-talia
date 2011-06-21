@@ -12,7 +12,7 @@ module OAI::Provider::Metadata
       @element_namespace = 'dc'
       @fields = [ :title, :creator, :subject, :description, :publisher,
                   :contributor, :date, :type, :format, :identifier,
-                  :source, :language, :relation, :coverage, :rights ]
+                  :source, :language, :relation, :coverage, :rights, :onix_21 ]
     end
 
     def header_specification
