@@ -5,12 +5,12 @@ module OAI::Provider::Response
       klass.default_parameters  :from => Proc.new {|x| Time.parse(x.provider.model.earliest.to_s) },
             :until => Proc.new {|x| Time.parse(x.provider.model.latest.to_s) }
     end
-    
+
     # emit record header
     def header_for(record)
       param = Hash.new
       param[:status] = 'deleted' if deleted?(record)
-      @builder.header param do 
+      @builder.header param do
         @builder.identifier identifier_for(record)
         @builder.datestamp timestamp_for(record)
         sets_for(record).each do |set|
@@ -25,46 +25,45 @@ module OAI::Provider::Response
         @builder.target! << provider.format(requested_format).encode(provider.model, record)
       end
     end
-    
+
     private
-    
+
     def identifier_for(record)
       "#{provider.prefix}/#{record.id}"
     end
-    
+
     def timestamp_for(record)
       record.send(provider.model.timestamp_field).utc.xmlschema
     end
-    
+
     def sets_for(record)
       return [] unless record.respond_to?(:sets) and record.sets
       record.sets.respond_to?(:each) ? record.sets : [record.sets]
     end
-    
+
     def requested_format
-      format = 
+      format =
       if options[:metadata_prefix]
         options[:metadata_prefix]
       elsif options[:resumption_token]
         OAI::Provider::ResumptionToken.extract_format(options[:resumption_token])
       end
       raise OAI::FormatException.new unless provider.format_supported?(format)
-      
+
       format
     end
-    
+
     def deleted?(record)
       return record.deleted? if record.respond_to?(:deleted?)
       return record.deleted if record.respond_to?(:deleted)
       return record.deleted_at if record.respond_to?(:deleted_at)
       false
     end
-    
+
     def record_supports(record, prefix)
-      prefix == 'oai_dc' or 
+      prefix == 'oai_dc' or
       record.respond_to?("to_#{prefix}") or
       record.respond_to?("map_#{prefix}")
+    end
   end
-    
-end
 end

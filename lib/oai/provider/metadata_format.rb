@@ -55,7 +55,7 @@ module OAI::Provider::Metadata
         values.each do |value|
           add_tag xml, namespace, field, value
         end
-      elsif values.is_a?(String) and values =~ /^<(.+)>.*<\/\1>$/ # data is xml
+      elsif values.is_a?(String) and values =~ /^<(.+?)>.*<(.+?)>$/ # data is xml
         xml << values
       elsif !values.nil? and !values.to_s.empty?
         add_tag xml, namespace, field, values
