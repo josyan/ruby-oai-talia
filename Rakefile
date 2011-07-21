@@ -3,9 +3,9 @@ RUBY_OAI_VERSION = '0.0.12'
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 require 'rake/packagetask'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 task :default => ["test"]
 
