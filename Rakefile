@@ -16,12 +16,10 @@ begin
   Jeweler::Tasks.new do |s|
     s.name = "oai_talia"
     s.summary = "A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH)"
-    s.email = "ghub@limitedcreativity.org"
-    s.homepage = "http://trac.talia.discovery-project.eu/"
     s.description = "A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH). Fork of the original version by Ed Summers, aims for best standards compatibility (test with http://re.cs.uct.ac.za/)"
     s.required_ruby_version = '>= 1.8.6'
-    s.authors = ["Ed Summers", "Daniel Hahn"]
-    s.homepage = 'http://github.com/net7/ruby-oai-talia/'
+    s.authors = ["Ed Summers", "Daniel Hahn", "Josyan Pierson"]
+    s.email = "josyan@demarque.com"
     s.platform = Gem::Platform::RUBY
     s.require_path = 'lib'
     s.autorequire = 'oai'
@@ -115,13 +113,3 @@ Rake::RDocTask.new('doc') do |rd|
   rd.rdoc_dir = 'doc'
 end
 
-begin
-  require 'gokdok'
-  Gokdok::Dokker.new do |gd|
-    gd.remote_path = ''
-    gd.rdoc_task = :doc
-    gd.doc_home = 'doc'
-  end
-rescue LoadError
-  puts "Gokdoc not available. Install it with: gem install gokdok"
-end
