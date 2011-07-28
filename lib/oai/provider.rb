@@ -11,10 +11,10 @@ end
 
 %w{ response metadata_format resumption_token model partial_result
     response/record_response response/identify response/get_record
-    response/list_identifiers response/list_records 
+    response/list_identifiers response/list_records
     response/list_metadata_formats response/list_sets response/error
   }.each { |lib| require File.dirname(__FILE__) + "/provider/#{lib}" }
-  
+
 if defined?(ActiveRecord)
   require File.dirname(__FILE__) + "/provider/model/activerecord_wrapper"
   require File.dirname(__FILE__) + "/provider/model/activerecord_caching_wrapper"
@@ -22,8 +22,8 @@ end
 
 # = OAI::Provider
 #
-# Open Archives Initiative - Protocol for Metadata Harvesting see 
-# http://www.openarchives.org/ 
+# Open Archives Initiative - Protocol for Metadata Harvesting see
+# http://www.openarchives.org/
 #
 # == Features
 # * Easily setup a simple repository
@@ -35,9 +35,9 @@ end
 #
 # == Usage
 #
-# To create a functional provider either subclass Provider::Base, 
+# To create a functional provider either subclass Provider::Base,
 # or reconfigure the defaults.
-# 
+#
 # === Sub classing a provider
 #
 #  class MyProvider < Oai::Provider
@@ -66,7 +66,7 @@ end
 # === Camping
 #
 # In the Models module of your camping application post model definition:
-# 
+#
 #   class CampingProvider < OAI::Provider::Base
 #     repository_name 'Camping Test OAI Repository'
 #     source_model ActiveRecordWrapper.new(YOUR_ACTIVE_RECORD_MODEL)
@@ -89,7 +89,7 @@ end
 # At the bottom of environment.rb create a OAI Provider:
 #
 #   # forgive the standard blog example.
-# 
+#
 #   require 'oai'
 #   class BlogProvider < OAI::Provider::Base
 #     repository_name 'My little OAI Provider'
@@ -111,12 +111,12 @@ end
 #     end
 #   end
 #
-# Special thanks to Jose Hales-Garcia for this solution. 
+# Special thanks to Jose Hales-Garcia for this solution.
 #
 # == Supporting custom metadata formats
 #
 # See Oai::Metadata for details.
-# 
+#
 # == ActiveRecord Integration
 #
 # ActiveRecord integration is provided by the ActiveRecordWrapper class.
@@ -127,9 +127,9 @@ end
 # * timestamp_field - Specifies the model field to use as the update
 #   filter.  Defaults to 'updated_at'.
 # * limit -           Maximum number of records to return in each page/set.
-#   Defaults to 100.  The wrapper will paginate the result via resumption tokens.  
+#   Defaults to 100.  The wrapper will paginate the result via resumption tokens.
 #   Caution:  specifying too large a limit will adversely affect performance.
-# 
+#
 # Mapping from a ActiveRecord object to a specific metadata format follows
 # this set of rules:
 #
@@ -142,18 +142,18 @@ end
 # For maximum control of the xml metadata generated, it's usually best to
 # provide a 'to_{metadata_prefix}' in the model.  If using Builder be sure
 # not to include any instruct! in the xml object.
-#  
-# === Explicit creation example 
+#
+# === Explicit creation example
 #
 #  class Post < ActiveRecord::Base
 #    def to_oai_dc
 #      xml = Builder::XmlMarkup.new
-#      xml.tag!("oai_dc:dc", 
+#      xml.tag!("oai_dc:dc",
 #        'xmlns:oai_dc' => "http://www.openarchives.org/OAI/2.0/oai_dc/",
 #        'xmlns:dc' => "http://purl.org/dc/elements/1.1/",
 #        'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
-#        'xsi:schemaLocation' => 
-#          %{http://www.openarchives.org/OAI/2.0/oai_dc/ 
+#        'xsi:schemaLocation' =>
+#          %{http://www.openarchives.org/OAI/2.0/oai_dc/
 #            http://www.openarchives.org/OAI/2.0/oai_dc.xsd}) do
 #          xml.tag!('oai_dc:title', title)
 #          xml.tag!('oai_dc:description', text)
@@ -164,16 +164,16 @@ end
 #      end
 #      xml.target!
 #    end
-#  end  
+#  end
 #
 # === Mapping Example
 #
 #  # Extremely contrived mapping
 #  class Post < ActiveRecord::Base
 #    def self.map_oai_dc
-#      {:subject => :tags, 
-#       :description => :text, 
-#       :creator => :user, 
+#      {:subject => :tags,
+#       :description => :text,
+#       :creator => :user,
 #       :contibutor => :comments}
 #    end
 #  end
@@ -181,20 +181,20 @@ end
 module OAI::Provider
   class Base
     include OAI::Provider
-    
+
     class << self
       attr_reader :formats
-      attr_accessor :name, :url, :prefix, :email, :delete_support, :granularity, :model
+      attr_accessor :r_name, :url, :prefix, :email, :delete_support, :granularity, :model
 
       def register_format(format)
         @formats ||= {}
         @formats[format.prefix] = format
       end
-      
+
       def format_supported?(prefix)
         @formats.keys.include?(prefix)
       end
-      
+
       def format(prefix)
         if @formats[prefix].nil?
           raise OAI::FormatException.new
@@ -203,22 +203,22 @@ module OAI::Provider
         end
       end
 
-      protected 
-      
+      protected
+
       def inherited(klass)
         self.instance_variables.each do |iv|
           klass.instance_variable_set(iv, self.instance_variable_get(iv))
         end
       end
 
-      alias_method :repository_name,    :name=
+      alias_method :repository_name,    :r_name=
       alias_method :repository_url,     :url=
       alias_method :record_prefix,      :prefix=
       alias_method :admin_email,        :email=
-      alias_method :deletion_support,   :delete_support=  
-      alias_method :update_granularity, :granularity=     
+      alias_method :deletion_support,   :delete_support=
+      alias_method :update_granularity, :granularity=
       alias_method :source_model,       :model=
-      
+
     end
 
     # Default configuration of a repository
@@ -230,7 +230,7 @@ module OAI::Provider
     Base.update_granularity OAI::Const::Granularity::HIGH
 
     Base.register_format(OAI::Provider::Metadata::DublinCore.instance)
-    
+
     # Equivalent to '&verb=Identify', returns information about the repository
     def identify(options = {})
       Response::Identify.new(self.class, options).to_xml
@@ -241,33 +241,33 @@ module OAI::Provider
     def list_sets(options = {})
       Response::ListSets.new(self.class, options).to_xml
     end
-    
+
     # Equivalent to '&verb=ListMetadataFormats', returns a list of metadata formats
     # supported by the repository.
     def list_metadata_formats(options = {})
       Response::ListMetadataFormats.new(self.class, options).to_xml
     end
 
-    # Equivalent to '&verb=ListIdentifiers', returns a list of record headers that 
+    # Equivalent to '&verb=ListIdentifiers', returns a list of record headers that
     # meet the supplied criteria.
     def list_identifiers(options = {})
       Response::ListIdentifiers.new(self.class, options).to_xml
     end
-    
-    # Equivalent to '&verb=ListRecords', returns a list of records that meet the 
+
+    # Equivalent to '&verb=ListRecords', returns a list of records that meet the
     # supplied criteria.
     def list_records(options = {})
       Response::ListRecords.new(self.class, options).to_xml
     end
-    
+
     # Equivalent to '&verb=GetRecord', returns a record matching the required
-    # :identifier option 
+    # :identifier option
     def get_record(options = {})
       Response::GetRecord.new(self.class, options).to_xml
     end
-    
-    #  xml_response = process_verb('ListRecords', :from => 'October 1, 2005', 
-    #    :until => 'November 1, 2005') 
+
+    #  xml_response = process_verb('ListRecords', :from => 'October 1, 2005',
+    #    :until => 'November 1, 2005')
     #
     # If you are implementing a web interface using process_request is the
     # preferred way.
@@ -276,14 +276,14 @@ module OAI::Provider
 
         # Allow the request to pass in a url
         self.class.url = params['url'] ? params.delete('url') : self.class.url
-          
+
         verb = params.delete('verb') || params.delete(:verb)
-        
+
         unless verb and OAI::Const::VERBS.keys.include?(verb)
           raise OAI::VerbException.new
         end
-          
-        send(methodize(verb), params) 
+
+        send(methodize(verb), params)
 
       rescue => err
         if err.respond_to?(:code)
@@ -293,12 +293,12 @@ module OAI::Provider
         end
       end
     end
-    
+
     # Convert valid OAI-PMH verbs into ruby method calls
     def methodize(verb)
       verb.gsub(/[A-Z]/) {|m| "_#{m.downcase}"}.sub(/^\_/,'')
     end
-    
+
   end
-  
+
 end

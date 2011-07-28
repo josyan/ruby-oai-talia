@@ -1,11 +1,11 @@
 module OAI::Provider::Response
-  
+
   class Identify < Base
-    
+
     def to_xml
       response do |r|
         r.Identify do
-          r.repositoryName provider.name
+          r.repositoryName provider.r_name
           r.baseURL provider.url
           r.protocolVersion 2.0
           if provider.email and provider.email.respond_to?(:each)
@@ -19,7 +19,7 @@ module OAI::Provider::Response
         end
       end
     end
-    
+
   end
-  
+
 end
