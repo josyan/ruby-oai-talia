@@ -1,20 +1,20 @@
 module OAI::Provider::Response
-  
+
   class ListIdentifiers < RecordResponse
     required_parameters :metadata_prefix
-    
+
     def to_xml
       result = provider.model.find(:all, options)
 
       # result may be an array of records, or a partial result
       records = result.respond_to?(:records) ? result.records : result
-      
+
       raise OAI::NoMatchException.new if records.nil? or records.empty?
-      format = requested_format # not call this in each iteration
-      records.reject! do |r| 
-        !record_supports(r, format)
-      end
-      
+#      format = requested_format # not call this in each iteration
+#      records.reject! do |r|
+#        !record_supports(r, format)
+#      end
+
       response do |r|
         r.ListIdentifiers do
           records.each do |rec|
@@ -29,7 +29,7 @@ module OAI::Provider::Response
         end
       end
     end
-    
+
   end
-  
+
 end

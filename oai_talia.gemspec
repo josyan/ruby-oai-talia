@@ -5,13 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{oai_talia}
-  s.version = "1.0.3"
+  s.version = "1.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ed Summers", "Daniel Hahn", "Josyan Pierson"]
   s.autorequire = %q{oai}
   s.date = %q{2011-07-28}
-  s.default_executable = %q{oai}
   s.description = %q{A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH). Fork of the original version by Ed Summers, aims for best standards compatibility (test with http://re.cs.uct.ac.za/)}
   s.email = %q{josyan@demarque.com}
   s.executables = ["oai"]
