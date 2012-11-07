@@ -16,7 +16,7 @@ module OAI::Provider
     def self.parse(token_string)
       begin
         options = {}
-        matches = /(.+):(\d+)$/.match(token_string)
+        matches = /(.+):(\w+)$/.match(token_string)
         options[:last] = matches.captures[1].to_i
         last_id = nil
         total = nil
