@@ -17,7 +17,7 @@ module OAI::Provider
       begin
         options = {}
         matches = /(.+):(\w+)$/.match(token_string)
-        options[:last] = matches.captures[1].to_i
+        options[:last] = matches.captures[1]
         last_id = nil
         total = nil
         
