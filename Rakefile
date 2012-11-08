@@ -15,7 +15,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "oai_talia"
-    s.version = '1.0.6'
+    s.version = '1.0.7'
     s.summary = "A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH)"
     s.description = "A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH). Fork of the original version by Ed Summers, aims for best standards compatibility (test with http://re.cs.uct.ac.za/)"
     s.required_ruby_version = '>= 1.8.6'

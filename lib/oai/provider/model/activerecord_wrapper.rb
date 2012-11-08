@@ -39,7 +39,7 @@ module OAI::Provider
 
     def last_id(conditions)
       first = model.find(:first, :conditions => conditions,
-        :order => "#{timestamp_field} desc")
+        :order => "#{model.primary_key} desc")
       first ? first.id : 0
     end
 
