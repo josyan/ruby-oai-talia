@@ -21,9 +21,7 @@ module OAI::Provider::Metadata
         'xmlns:dc' => "http://purl.org/dc/elements/1.1/",
         'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
         'xmlns:onix' => "http://www.editeur.org/onix/2.1/reference",
-        'xsi:schemaLocation' =>
-          %{http://bibnum.bnf.fr/NS/onix_dc/
-            http://bibnum.bnf.fr/NS/onix_dc.xsd}
+        'xsi:schemaLocation' => "http://bibnum.bnf.fr/NS/onix_dc/ http://bibnum.bnf.fr/NS/onix_dc.xsd"
       }
     end
 
