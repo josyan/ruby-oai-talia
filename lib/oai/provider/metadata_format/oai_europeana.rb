@@ -27,10 +27,7 @@ module OAI::Provider::Metadata
         'xmlns:europeana' =>  'http://europeana.eu/terms/',
         'xmlns:local'     =>  'http://metadata.cerl.org/oai/namespace/local/',
         'xmlns:xsi'       =>  'http://www.w3.org/2001/XMLSchema-instance',
-        'xsi:schemaLocation' => 
-          %{http://purl.org/dc/elements/1.1/
-            http://dublincore.org/schemas/xmls/qdc/dc.xsd http://purl.org/dc/terms/
-            http://dublincore.org/schemas/xmls/qdc/dcterms.xsd}
+        'xsi:schemaLocation' => "http://purl.org/dc/elements/1.1/ http://dublincore.org/schemas/xmls/qdc/dc.xsd http://purl.org/dc/terms/ http://dublincore.org/schemas/xmls/qdc/dcterms.xsd"
       }
     end
 
