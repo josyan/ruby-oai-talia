@@ -15,7 +15,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "oai_talia"
-    s.version = '1.0.9'
+    s.version = '1.0.10'
     s.summary = "A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH)"
     s.description = "A ruby library for working with the Open Archive Initiative Protocol for Metadata Harvesting (OAI-PMH). Fork of the original version by Ed Summers, aims for best standards compatibility (test with http://re.cs.uct.ac.za/)"
     s.required_ruby_version = '>= 1.8.6'
@@ -29,9 +29,9 @@ begin
     s.executables = 'oai'
 
     s.add_dependency('builder', '>=2.0.0')
-    
+
     s.files = %w(README Rakefile) +
-      Dir.glob("{bin,test,lib}/**/*") + 
+      Dir.glob("{bin,test,lib}/**/*") +
       Dir.glob("examples/**/*.rb")
   end
   Jeweler::GemcutterTasks.new
@@ -76,7 +76,7 @@ task :test => ['test:client', 'test:provider', 'test:activerecord_provider']
 
 task 'test:activerecord_provider' => :create_database
 
-task :environment do 
+task :environment do
   unless defined? OAI_PATH
     OAI_PATH = File.dirname(__FILE__) + '/lib/oai'
     $LOAD_PATH << OAI_PATH
@@ -107,7 +107,7 @@ task :load_fixtures => :create_database do
     DCField.create(fixtures[key])
   end
 end
-  
+
 Rake::RDocTask.new('doc') do |rd|
   rd.rdoc_files.include("lib/**/*.rb", "README")
   rd.main = 'README'
